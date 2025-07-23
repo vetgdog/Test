@@ -151,6 +151,7 @@ public static void main(String[] args) throws Exception {
         audioSetting.put("format", fileFormat);
         audioSetting.put("channel", 1);
         body.put("audio_setting", audioSetting);
+        body.put("language_boost", "Japanese");
 
         return body.toString();
     }
