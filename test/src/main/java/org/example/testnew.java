@@ -15,20 +15,11 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
-public class TTSClient {
+public class testnew {
     private static final String groupId = "1945048847600325060"; // TODO: 填写您的 GroupId
-    private static final String apiKey = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJHcm91cE5hbWUiOiJtZXRhWHNpcmUgWCIsIlVzZXJOYW1lIjoibWV0YVhzaXJlIFgiLCJBY2NvdW50IjoiIiwiU3ViamVjdElEIjoiMTk0NTA0ODg0NzYwODcxMzY2OCIsIlBob25lIjoiIiwiR3JvdXBJRCI6IjE5NDUwNDg4NDc2MDAzMjUwNjAiLCJQYWdlTmFtZSI6IiIsIk1haWwiOiJtZXRheHNpcmVAZ21haWwuY29tIiwiQ3JlYXRlVGltZSI6IjIwMjUtMDctMTggMTE6MTk6NDIiLCJUb2tlblR5cGUiOjEsImlzcyI6Im1pbmltYXgifQ.jUqG80TnHtTadoLgOuFwZ1KB7UimowIZaBkbxjrrOHMUBc-y1ENelKsRGSgy5YxRtCLasB_ivq3ibsnO6ZVFRatTaC8cgdC0dRb2EnMSASgzoj7yxc0bJZIvkTbs5NbuQbrkW5aAxGnGVWmGCMjt1xkRM6UYglhDXe_4t-OqOk7BcRVLCAvBGqxsbuA6-yXVpXKmQQlI4ieHgjzm8NvTZwlBsMErSC3EQJUY3-RG_Dwje7zWoX0DYDdBdwCBqmnCfY_qmkzhtiLeM4RyjkniDxWKYrxCWOL0abYtzshqUANYj56VueSUED2Vqy2x9Md-oDFej1m5ZkhIkk2ZfsJ9Zw";
+    private static final String apiKey = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJHcm91cE5hbWUiOiJtZXRhWHNpcmUgWCIsIlVzZXJOYW1lIjoibWV0YVhzaXJlIFgiLCJBY2NvdW50IjoiIiwiU3ViamVjdElEIjoiMTk0NTA0ODg0NzYwODcxMzY2OCIsIlBob25lIjoiIiwiR3JvdXBJRCI6IjE5NDUwNDg4NDc2MDAzMjUwNjAiLCJQYWdlTmFtZSI6IiIsIk1haWwiOiJtZXRheHNpcmVAZ21haWwuY29tIiwiQ3JlYXRlVGltZSI6IjIwMjUtMDgtMDQgMTY6NTM6MDkiLCJUb2tlblR5cGUiOjEsImlzcyI6Im1pbmltYXgifQ.DQ3qU9s7FSGLI6MV6E-UUYXeb1BoL88UgviCvdG9g31WIndVzmINfrLkL1f6nx3iNfaDhH17bG5QnzpPFyGqRU2dMyaitzcF2zsYIano8929-_URutfz_2ARNPPGCvWHA5GaDJFLYvBEA_XUb2R7H9N4aFNT1zh9LtbDX2Zp28p7EGZv5gobGxzTtTnyBohy4Bx1N93U1JbxHaJ1wwo13Nu4ExOloC3Lbg1kdfFrQYxGZMyEXo5n0JxdJH23dhlO2Sazw_9-hBOpx0T1E4NsO_Sj1CfrC9BsqKZIyhCkhOtXg20c2uNgiPygo6aiUeWDRHAVRajjietcNDYUsATb2g";
     private static final String fileFormat = "mp3"; // 支持 mp3/pcm/flac
-
-    // 添加全局OkHttpClient实例，共享连接池
-    private static final OkHttpClient client = new OkHttpClient.Builder()
-            .connectTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
-            .readTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
-            .writeTimeout(30, java.util.concurrent.TimeUnit.MILLISECONDS)
-            .connectionPool(new ConnectionPool(5, 5, TimeUnit.MINUTES)) // 自定义连接池配置
-            .build();
 
 
     public static void main(String[] args) throws Exception {
@@ -110,6 +101,12 @@ public class TTSClient {
 
     //发出请求，将文本转换为音频
     public static void ttsNonStream(String order,String type, String text,String voiceId,String emotion,String characterName) throws IOException {
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(0, java.util.concurrent.TimeUnit.MILLISECONDS)
+                .readTimeout(0, java.util.concurrent.TimeUnit.MILLISECONDS)
+                .writeTimeout(0, java.util.concurrent.TimeUnit.MILLISECONDS)
+                .build();
+
 
         String url = "https://api.minimax.io/v1/t2a_v2?GroupId=" + groupId;
 
@@ -175,7 +172,7 @@ public class TTSClient {
         //Supported values include:
         //'Chinese', 'Chinese,Yue', 'English', 'Arabic', 'Russian', 'Spanish', 'French', 'Portuguese', 'German', 'Turkish', 'Dutch',
         // 'Ukrainian', 'Vietnamese', 'Indonesian', 'Japanese', 'Italian', 'Korean', 'Thai', 'Polish', 'Romanian', 'Greek', 'Czech', 'Finnish', 'Hindi', 'auto'
-        body.put("language_boost", "Japanese");
+        body.put("language_boost", "Spanish");
 
         return body.toString();
     }

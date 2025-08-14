@@ -1,10 +1,13 @@
 package org.example;
 
-
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.*;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
+import org.example.dao.SystemVoiceDto;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
@@ -13,28 +16,19 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-
+import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
-public class TTSClient {
+public class testnew {
     private static final String groupId = "1945048847600325060"; // TODO: 填写您的 GroupId
     private static final String apiKey = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJHcm91cE5hbWUiOiJtZXRhWHNpcmUgWCIsIlVzZXJOYW1lIjoibWV0YVhzaXJlIFgiLCJBY2NvdW50IjoiIiwiU3ViamVjdElEIjoiMTk0NTA0ODg0NzYwODcxMzY2OCIsIlBob25lIjoiIiwiR3JvdXBJRCI6IjE5NDUwNDg4NDc2MDAzMjUwNjAiLCJQYWdlTmFtZSI6IiIsIk1haWwiOiJtZXRheHNpcmVAZ21haWwuY29tIiwiQ3JlYXRlVGltZSI6IjIwMjUtMDctMTggMTE6MTk6NDIiLCJUb2tlblR5cGUiOjEsImlzcyI6Im1pbmltYXgifQ.jUqG80TnHtTadoLgOuFwZ1KB7UimowIZaBkbxjrrOHMUBc-y1ENelKsRGSgy5YxRtCLasB_ivq3ibsnO6ZVFRatTaC8cgdC0dRb2EnMSASgzoj7yxc0bJZIvkTbs5NbuQbrkW5aAxGnGVWmGCMjt1xkRM6UYglhDXe_4t-OqOk7BcRVLCAvBGqxsbuA6-yXVpXKmQQlI4ieHgjzm8NvTZwlBsMErSC3EQJUY3-RG_Dwje7zWoX0DYDdBdwCBqmnCfY_qmkzhtiLeM4RyjkniDxWKYrxCWOL0abYtzshqUANYj56VueSUED2Vqy2x9Md-oDFej1m5ZkhIkk2ZfsJ9Zw";
     private static final String fileFormat = "mp3"; // 支持 mp3/pcm/flac
-
-    // 添加全局OkHttpClient实例，共享连接池
-    private static final OkHttpClient client = new OkHttpClient.Builder()
-            .connectTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
-            .readTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
-            .writeTimeout(30, java.util.concurrent.TimeUnit.MILLISECONDS)
-            .connectionPool(new ConnectionPool(5, 5, TimeUnit.MINUTES)) // 自定义连接池配置
-            .build();
 
 
     public static void main(String[] args) throws Exception {
         Long l = System.currentTimeMillis();
         //传入的excel文件
-        String excelPath = "C:\\Users\\admin\\Desktop\\工作簿_2.xlsx";
+        String excelPath = "C:\\Users\\admin\\Desktop\\工作簿_1.xlsx";
         DoClone(excelPath);
         System.out.println(System.currentTimeMillis() - l);
     }
@@ -110,6 +104,12 @@ public class TTSClient {
 
     //发出请求，将文本转换为音频
     public static void ttsNonStream(String order,String type, String text,String voiceId,String emotion,String characterName) throws IOException {
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(0, java.util.concurrent.TimeUnit.MILLISECONDS)
+                .readTimeout(0, java.util.concurrent.TimeUnit.MILLISECONDS)
+                .writeTimeout(0, java.util.concurrent.TimeUnit.MILLISECONDS)
+                .build();
+
 
         String url = "https://api.minimax.io/v1/t2a_v2?GroupId=" + groupId;
 
@@ -143,7 +143,7 @@ public class TTSClient {
 
 
 
-            String filename = order+ '_' + type + "_" + characterName +"_es"  + "."  + fileFormat;
+            String filename = order+ '_' + type + "_" + characterName +"_it"  + "."  + fileFormat;
             String filePath = "F:\\TTSClient\\" + filename;
 
             Files.write(Paths.get(filePath), audioBytes);
@@ -175,7 +175,7 @@ public class TTSClient {
         //Supported values include:
         //'Chinese', 'Chinese,Yue', 'English', 'Arabic', 'Russian', 'Spanish', 'French', 'Portuguese', 'German', 'Turkish', 'Dutch',
         // 'Ukrainian', 'Vietnamese', 'Indonesian', 'Japanese', 'Italian', 'Korean', 'Thai', 'Polish', 'Romanian', 'Greek', 'Czech', 'Finnish', 'Hindi', 'auto'
-        body.put("language_boost", "Japanese");
+        body.put("language_boost", "Italian");
 
         return body.toString();
     }
@@ -188,4 +188,60 @@ public class TTSClient {
         }
         return out.toByteArray();
     }
+
+
+    public static  List<SystemVoiceDto> GetAllVoiceId() throws Exception {
+        OkHttpClient client = new OkHttpClient();
+
+        // 构建 form-data 请求体
+        RequestBody formBody = new FormBody.Builder()
+                .add("voice_type", "all")
+                .build();
+
+        // 构建请求
+        Request request = new Request.Builder()
+                .url("https://api.minimax.io/v1/get_voice")
+                .addHeader("authority", "api.minimax.io")
+                .addHeader("Authorization", "Bearer " + apiKey) // 注意空格！
+                .addHeader("Content-Type", "application/x-www-form-urlencoded")
+                .post(formBody)
+                .build();
+
+        // 发送请求并处理响应
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                System.err.println("请求失败，状态码：" + response.code());
+                if (response.body() != null) {
+                    System.err.println("错误信息：" + response.body().string());
+                }
+            } else {
+                if (response.body() != null) {
+                    String responseBody = response.body().string();
+                    ObjectMapper mapper = new ObjectMapper();
+
+                    // 允许忽略未知字段
+                    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+                    JsonNode root = mapper.readTree(responseBody);
+                    JsonNode systemVoiceNode = root.get("system_voice");
+
+                    if (systemVoiceNode != null && systemVoiceNode.isArray()) {
+                        return mapper.convertValue(systemVoiceNode, new TypeReference<List<SystemVoiceDto>>() {});
+                    } else {
+                        System.out.println("system_voice 字段不存在或不是数组");
+                        return Collections.emptyList();
+                    }
+                } else {
+                    System.out.println("请求成功，但返回体为空！");
+                    return Collections.emptyList();
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("网络或解析异常：" + e.getMessage());
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+        return Collections.emptyList();
+    }
+
 }
